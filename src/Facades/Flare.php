@@ -4,7 +4,7 @@ namespace OutlawzTeam\Radicle\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Radicle extends Facade
+class Flare extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class Radicle extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'Radicle';
+        return 'Flare';
     }
 }

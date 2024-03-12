@@ -3,16 +3,15 @@
 namespace OutlawzTeam\Radicle\Console;
 
 use Roots\Acorn\Console\Commands\Command;
-use OutlawzTeam\Radicle\Facades\Radicle;
 
-class RadicleCommand extends Command
+class AcfCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'radicle';
+    protected $signature = 'acf';
 
     /**
      * The console command description.
@@ -28,8 +27,6 @@ class RadicleCommand extends Command
      */
     public function handle()
     {
-        $this->info(
-            Radicle::getQuote()
-        );
+        $this->info('test');
     }
 }

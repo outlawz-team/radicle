@@ -13,19 +13,5 @@ composer require outlawz-team/radicle
 You can publish the config file with:
 
 ```shell
-$ wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\RadicleServiceProvider"
-```
-
-## Usage
-
-From a Blade template:
-
-```blade
-@include('Radicle::radicle')
-```
-
-From WP-CLI:
-
-```shell
-$ wp acorn radicle
+$ wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\FlareServiceProvider"
 ```

@@ -5,7 +5,7 @@ namespace OutlawzTeam\Radicle;
 use Illuminate\Support\Arr;
 use Roots\Acorn\Application;
 
-class Radicle
+class Acf
 {
     /**
      * The application instance.
@@ -23,17 +23,5 @@ class Radicle
     public function __construct(Application $app)
     {
         $this->app = $app;
-    }
-
-    /**
-     * Retrieve a random inspirational quote.
-     *
-     * @return string
-     */
-    public function getQuote()
-    {
-        return Arr::random(
-            config('radicle.quotes')
-        );
     }
 }

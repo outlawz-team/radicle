@@ -20,10 +20,12 @@
   "extra": {
     "acorn": {
       "providers": [
-        "OutlawzTeam\\Radicle\\Providers\\RadicleServiceProvider"
+        "OutlawzTeam\\Radicle\\Providers\\FlareServiceProvider",
+        "OutlawzTeam\\Radicle\\Providers\\AcfServiceProvider"
       ],
       "aliases": {
-        "Radicle": "OutlawzTeam\\Radicle\\Facades\\Radicle"
+        "Flare": "OutlawzTeam\\Radicle\\Facades\\Flare",
+        "Acf": "OutlawzTeam\\Radicle\\Facades\\Acf"
       }
     }
   }
