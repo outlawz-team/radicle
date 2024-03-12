@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\ExamplePackage\Providers;
+namespace OutlawzTeam\Radicle\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use VendorName\ExamplePackage\Console\ExampleCommand;
-use VendorName\ExamplePackage\Example;
+use OutlawzTeam\Radicle\Console\RadicleCommand;
+use OutlawzTeam\Radicle\Radicle;
 
-class ExampleServiceProvider extends ServiceProvider
+class RadicleServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -16,12 +16,12 @@ class ExampleServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton('Example', function () {
-            return new Example($this->app);
+            return new Radicle($this->app);
         });
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/example.php',
-            'example'
+            __DIR__.'/../../config/radicle.php',
+            'radicle'
         );
     }
 
@@ -33,18 +33,18 @@ class ExampleServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../../config/example.php' => $this->app->configPath('example.php'),
+            __DIR__.'/../../config/example.php' => $this->app->configPath('radicle.php'),
         ], 'config');
 
         $this->loadViewsFrom(
             __DIR__.'/../../resources/views',
-            'Example',
+            'Radicle',
         );
 
         $this->commands([
-            ExampleCommand::class,
+            RadicleCommand::class,
         ]);
 
-        $this->app->make('Example');
+        $this->app->make('Radicle');
     }
 }

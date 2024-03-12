@@ -1,1 +1,1 @@
-{{ Example::getQuote() }}
+{{ Radicle::getQuote() }}
