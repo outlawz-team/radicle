@@ -3,6 +3,8 @@
 namespace OutlawzTeam\Radicle;
 
 use Roots\Acorn\Application;
+use Spatie\FlareClient\Flare as FlareClientFlare;
+use Throwable;
 
 class Flare
 {
@@ -25,12 +27,24 @@ class Flare
     }
 
     /**
-     * Retrieve a random inspirational quote.
+     * Boot the Flare client.
      *
-     * @return string
+     * @return void
      */
-    public function test()
+    public function boot()
     {
-        return 'test';
+        $flare = FlareClientFlare::make(config('flare.key'))->registerFlareHandlers();
+
+        $flare->reportErrorLevels(config('flare.level', E_ALL));
+
+        $flare->filterExceptionsUsing(function (Throwable $throwable) {
+            foreach (config('flare.exceptions', []) as $exception) {
+                if ($throwable instanceof $exception) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
     }
 }

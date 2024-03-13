@@ -3,7 +3,9 @@
 namespace OutlawzTeam\Radicle\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use OutlawzTeam\Radicle\Facades\Acf;
+use OutlawzTeam\Radicle\Acf;
+use OutlawzTeam\Radicle\Console\MakeAcfCommand;
+use OutlawzTeam\Radicle\Facades\Acf as FacadesAcf;
 
 class AcfServiceProvider extends ServiceProvider
 {
@@ -26,10 +28,14 @@ class AcfServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->commands([
-        //     AcfCommand::class,
-        // ]);
+        if(function_exists('acf_add_local_field_group')){
+            $this->commands([
+                MakeAcfCommand::class,
+            ]);
+        }
 
         $this->app->make('Acf');
+
+        FacadesAcf::boot();
     }
 }

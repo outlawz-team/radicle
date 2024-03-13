@@ -3,7 +3,8 @@
 namespace OutlawzTeam\Radicle\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use OutlawzTeam\Radicle\Facades\Flare;
+use OutlawzTeam\Radicle\Facades\Flare as FacadesFlare;
+use OutlawzTeam\Radicle\Flare;
 
 class FlareServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,7 @@ class FlareServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             __DIR__.'/../../config/flare.php',
-            'acf'
+            'flare'
         );
     }
 
@@ -35,9 +36,10 @@ class FlareServiceProvider extends ServiceProvider
             __DIR__.'/../../config/flare.php' => $this->app->configPath('flare.php'),
         ], 'config');
 
-
         $this->app->make('Flare');
 
-        Flare::test();
+        if (config('flare.key')) {
+            FacadesFlare::boot();
+        }
     }
 }

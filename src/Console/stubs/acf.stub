@@ -1,0 +1,42 @@
+<?php
+
+namespace {{ namespace }};
+
+use OutlawzTeam\Radicle\Support\Acf;
+
+class {{ class }} extends Acf
+{
+    /**
+     * ACF key
+     */
+    protected $key = '';
+
+    /**
+     * ACF title
+     */
+    protected $title = '';
+
+    /**
+     * ACF fields
+     */
+    public function fields()
+    {
+        return [];
+    }
+
+    /**
+     * ACF Location
+     */
+    public function location()
+    {
+        return [];
+    }
+
+    /**
+     * ACF Options
+     */
+    public function options()
+    {
+        return [];
+    }
+}
