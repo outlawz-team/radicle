@@ -49,6 +49,9 @@ class Acf
     public function getAllAcfClasses()
     {
         $acfPath = $this->getAcfPath();
+        if (!file_exists($acfPath)) {
+            return [];
+        }
         $acfFiles = scandir($acfPath);
         $acfClasses = [];
         foreach ($acfFiles as $acfFile) {
