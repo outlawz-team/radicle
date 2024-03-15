@@ -121,8 +121,8 @@ abstract class Acf
 
         $this->field_keys[$field['name']] = $field['key'];
 
-        if (isset($field['fields'])) {
-            $field['fields'] = $this->generateKeys($field['fields'], $field['key'] . '_');
+        if (isset($field['sub_fields'])) {
+            $field['sub_fields'] = $this->generateKeys($field['sub_fields'], $field['key'] . '_');
         }
         
         return $field;
@@ -155,8 +155,8 @@ abstract class Acf
             }
         }
 
-        if (isset($field['fields'])) {
-            $field['fields'] = $this->generateKeysFixConditions($field['fields']);
+        if (isset($field['sub_fields'])) {
+            $field['sub_fields'] = $this->generateKeysFixConditions($field['sub_fields']);
         }
 
         return $field;
