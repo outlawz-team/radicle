@@ -124,6 +124,12 @@ abstract class Acf
         if (isset($field['sub_fields'])) {
             $field['sub_fields'] = $this->generateKeys($field['sub_fields'], $field['key'] . '_');
         }
+
+        if (isset($field['layouts'])) {
+            foreach ($field['layouts'] as $k => $layout) {
+                $field['layouts'][$k]['sub_fields'] = $this->generateKeys($layout['sub_fields'], $field['key'] . '_' . $layout['name'] . '_');
+            }
+        }
         
         return $field;
     }
@@ -157,6 +163,12 @@ abstract class Acf
 
         if (isset($field['sub_fields'])) {
             $field['sub_fields'] = $this->generateKeysFixConditions($field['sub_fields']);
+        }
+
+        if (isset($field['layouts'])) {
+            foreach ($field['layouts'] as $k => $layout) {
+                $field['layouts'][$k]['sub_fields'] = $this->generateKeysFixConditions($layout['sub_fields']);
+            }
         }
 
         return $field;
