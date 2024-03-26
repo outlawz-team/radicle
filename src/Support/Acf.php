@@ -104,6 +104,9 @@ abstract class Acf
     public function generateKeys(array $fields, $prefix)
     {
         foreach ($fields as $key => $field) {
+			if ($field['type'] == 'jetforms') {
+				$field = JetformsFieldGenerator::generate($field);
+			}
             $fields[$key] = $this->generateKey($field, $prefix);
         }
 
