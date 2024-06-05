@@ -70,7 +70,7 @@ abstract class Acf
     public function build()
     {
         $fields = $this->fields();
-        
+
         $fields = $this->autoKeyGenerate($fields);
 
         return [
@@ -90,7 +90,7 @@ abstract class Acf
         if (!$this->generateKeys) {
             return $fields;
         }
-        
+
         $fields = $this->generateKeys($fields, $this->getKey() . '_');
 
         $fields = $this->generateKeysFixConditions($fields);
@@ -104,9 +104,9 @@ abstract class Acf
     public function generateKeys(array $fields, $prefix)
     {
         foreach ($fields as $key => $field) {
-			if ($field['type'] == 'jetforms') {
-				$field = JetformsFieldGenerator::generate($field);
-			}
+            if ($field['type'] == 'jetforms') {
+                $field = JetformsFieldGenerator::generate($field);
+            }
             $fields[$key] = $this->generateKey($field, $prefix);
         }
 
@@ -122,8 +122,9 @@ abstract class Acf
             $field['key'] = $prefix . $field['name'];
         }
 
-        $this->field_keys[$field['name']] = $field['key'];
-
+        if (isset($field['name']) && isset($field['key'])) {
+            $this->field_keys[$field['name']] = $field['key'];
+        }
         if (isset($field['sub_fields'])) {
             $field['sub_fields'] = $this->generateKeys($field['sub_fields'], $field['key'] . '_');
         }
@@ -133,7 +134,7 @@ abstract class Acf
                 $field['layouts'][$k]['sub_fields'] = $this->generateKeys($layout['sub_fields'], $field['key'] . '_' . $layout['name'] . '_');
             }
         }
-        
+
         return $field;
     }
 
@@ -157,7 +158,7 @@ abstract class Acf
         if (isset($field['conditional_logic'])) {
             foreach ($field['conditional_logic'] as $key => $logic) {
                 foreach ($logic as $k => $condition) {
-                    if(isset($this->field_keys[$condition['field']])){
+                    if (isset($this->field_keys[$condition['field']])) {
                         $field['conditional_logic'][$key][$k]['field'] = $this->field_keys[$condition['field']];
                     }
                 }
@@ -176,5 +177,4 @@ abstract class Acf
 
         return $field;
     }
-
 }
