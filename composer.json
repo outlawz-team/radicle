@@ -22,7 +22,8 @@
     "acorn": {
       "providers": [
         "OutlawzTeam\\Radicle\\Providers\\FlareServiceProvider",
-        "OutlawzTeam\\Radicle\\Providers\\AcfServiceProvider"
+        "OutlawzTeam\\Radicle\\Providers\\AcfServiceProvider",
+        "OutlawzTeam\\Radicle\\Providers\\LoginServiceProvider"
       ],
       "aliases": {
         "Flare": "OutlawzTeam\\Radicle\\Facades\\Flare",
