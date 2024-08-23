@@ -158,7 +158,14 @@ class LoginServiceProvider extends ServiceProvider
      */
     public function create_outlawz_customer_role()
     {
-        $admin_capabilities = get_role('administrator')->capabilities;
+        $admin_role = get_role('administrator');
+
+        if (!$admin_role) {
+            return;
+        }
+
+        $admin_capabilities = $admin_role->capabilities;
+
         // Remove capabilities that are not needed for the Outlawz klant role
         $admin_capabilities['update_core'] = false;
 
