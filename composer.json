@@ -23,7 +23,8 @@
       "providers": [
         "OutlawzTeam\\Radicle\\Providers\\FlareServiceProvider",
         "OutlawzTeam\\Radicle\\Providers\\AcfServiceProvider",
-        "OutlawzTeam\\Radicle\\Providers\\LoginServiceProvider"
+        "OutlawzTeam\\Radicle\\Providers\\LoginServiceProvider",
+        "OutlawzTeam\\Radicle\\Providers\\BoostServiceProvider"
       ],
       "aliases": {
         "Flare": "OutlawzTeam\\Radicle\\Facades\\Flare",
