@@ -15,11 +15,11 @@ You can publish the config file with:
 Flare config file
 
 ```shell
-$ wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\FlareServiceProvider"
+wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\FlareServiceProvider"
 ```
 
 ACF config file
 
 ```shell
-$ wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\AcfServiceProvider"
+wp acorn vendor:publish --provider="OutlawzTeam\Radicle\Providers\AcfServiceProvider"
 ```
