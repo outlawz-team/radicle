@@ -224,6 +224,66 @@ Gebruik altijd de inline assignment in `@if` voor cleane templates:
 @endif
 ```
 
+## ACF — leesbare labels en instructies
+
+Geef elk ACF field altijd een **duidelijk, leesbaar label** in het Nederlands dat de redacteur direct begrijpt. Geen technische namen of Engelse slugs als label.
+
+```php
+// ✅ Goed
+['label' => 'Hoofdtitel', 'name' => 'heading', ...]
+['label' => 'Achtergrondafbeelding', 'name' => 'background_image', ...]
+['label' => 'Knoptekst', 'name' => 'button', ...]
+
+// ❌ Fout
+['label' => 'heading', 'name' => 'heading', ...]
+['label' => 'bg_image', 'name' => 'background_image', ...]
+```
+
+Voeg waar nodig een **`instructions`** toe om de redacteur te helpen — zeker bij fields die niet vanzelfsprekend zijn (afbeeldingsverhoudingen, tekenlimieten, verwacht formaat, etc.):
+
+```php
+[
+    'key'          => 'field_hb_heading',
+    'label'        => 'Hoofdtitel',
+    'name'         => 'heading',
+    'type'         => 'text',
+    'instructions' => 'Houd de titel kort (max. 60 tekens).',
+],
+[
+    'key'          => 'field_hb_image',
+    'label'        => 'Afbeelding',
+    'name'         => 'image',
+    'type'         => 'image',
+    'instructions' => 'Gebruik een afbeelding in verhouding 16:9, minimaal 1280×720px.',
+    'return_format' => 'array',
+],
+```
+
+## ACF — tekstvelden altijd als Wysiwyg Editor
+
+Gebruik voor tekst area blokken (lange tekst, beschrijvingen, body content) **altijd** het ACF field type `wysiwyg`. Gebruik nooit een `textarea` field als de redacteur opmaak nodig heeft (koppen, bold, lijsten, links, etc.).
+
+```php
+[
+    'key'          => 'field_hb_content',
+    'label'        => 'Content',
+    'name'         => 'content',
+    'type'         => 'wysiwyg',
+    'toolbar'      => 'full',
+    'media_upload' => 0,
+],
+```
+
+In Blade — render altijd met `{!! !!}` omdat de output HTML bevat:
+
+```blade
+@if ($content = get_sub_field('content'))
+    <div class="prose max-w-none">{!! $content !!}</div>
+@endif
+```
+
+Gebruik een `textarea` field **alleen** als het gaat om puur plain text zonder opmaak (bijv. een meta-omschrijving of een alt-tekst invoerveld).
+
 ## ACF — knoppen altijd als link field
 
 Gebruik voor knoppen **altijd** het ACF field type `link`. Dit geeft de redacteur drie velden: URL, tekst en target (`_blank` of niet). Gebruik nooit losse `text` fields voor URL en label.
