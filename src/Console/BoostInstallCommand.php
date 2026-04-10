@@ -21,11 +21,43 @@ class BoostInstallCommand extends Command
     protected $description = 'Install Outlawz Boost AI files into the project root';
 
     /**
+     * Skills to install, keyed by skill name with the raw GitHub base URL as value.
+     *
+     * @var array<string, string>
+     */
+    protected array $skills = [
+        'acf'                  => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
+        'tailwind-v4'          => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
+        'web-design-guidelines' => 'https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills',
+    ];
+
+    /**
+     * Agent skill target paths relative to the project root.
+     *
+     * @var array<string, string>
+     */
+    protected array $agentSkillPaths = [
+        'claude' => '.claude/skills',
+        'codex'  => '.agents/skills',
+    ];
+
+    /**
      * Execute the console command.
      *
      * @return void
      */
     public function handle()
+    {
+        $this->installAiFiles();
+        $this->installSkills();
+    }
+
+    /**
+     * Copy .ai directory contents into the project root.
+     *
+     * @return void
+     */
+    protected function installAiFiles(): void
     {
         $aiDir = __DIR__ . '/../../.ai';
 
@@ -44,7 +76,41 @@ class BoostInstallCommand extends Command
             $this->copyDirectory($item->getPathname(), $projectRoot);
         }
 
-        $this->info('Outlawz Boost AI files installed successfully.');
+        $this->info('AI files installed successfully.');
+    }
+
+    /**
+     * Download and install skills from outlawz-team/skills into each agent's skills directory.
+     *
+     * @return void
+     */
+    protected function installSkills(): void
+    {
+        $projectRoot = $this->laravel->basePath();
+
+        foreach ($this->skills as $skill => $skillsBaseUrl) {
+            $url = "{$skillsBaseUrl}/{$skill}/SKILL.md";
+            $content = @file_get_contents($url);
+
+            if ($content === false) {
+                $this->warn("  Could not download skill: {$skill}");
+                continue;
+            }
+
+            foreach ($this->agentSkillPaths as $agent => $path) {
+                $targetDir = $projectRoot . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $skill;
+                $targetFile = $targetDir . DIRECTORY_SEPARATOR . 'SKILL.md';
+
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0755, true);
+                }
+
+                file_put_contents($targetFile, $content);
+                $this->line("  <fg=green>installed</> skill [{$agent}]: {$skill}");
+            }
+        }
+
+        $this->info('Skills installed successfully.');
     }
 
     /**
