@@ -21,13 +21,14 @@ class BoostInstallCommand extends Command
     protected $description = 'Install Outlawz Boost AI files into the project root';
 
     /**
-     * Skills to install from the outlawz-team/skills repository.
+     * Skills to install, keyed by skill name with the raw GitHub base URL as value.
      *
-     * @var array<string>
+     * @var array<string, string>
      */
     protected array $skills = [
-        'acf',
-        'tailwind-v4',
+        'acf'                  => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
+        'tailwind-v4'          => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
+        'web-design-guidelines' => 'https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills',
     ];
 
     /**
@@ -85,10 +86,9 @@ class BoostInstallCommand extends Command
      */
     protected function installSkills(): void
     {
-        $skillsBaseUrl = 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills';
         $projectRoot = $this->laravel->basePath();
 
-        foreach ($this->skills as $skill) {
+        foreach ($this->skills as $skill => $skillsBaseUrl) {
             $url = "{$skillsBaseUrl}/{$skill}/SKILL.md";
             $content = @file_get_contents($url);
 
