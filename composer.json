@@ -19,6 +19,9 @@
     "spatie/ignition": "^1.12"
   },
   "extra": {
+    "outlawz": {
+      "skills": "skills"
+    },
     "acorn": {
       "providers": [
         "OutlawzTeam\\Radicle\\Providers\\FlareServiceProvider",
