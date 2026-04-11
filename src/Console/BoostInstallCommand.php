@@ -21,17 +21,6 @@ class BoostInstallCommand extends Command
     protected $description = 'Install Outlawz Boost AI files into the project root';
 
     /**
-     * Skills to install, keyed by skill name with the raw GitHub base URL as value.
-     *
-     * @var array<string, string>
-     */
-    protected array $skills = [
-        'acf'                  => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
-        'tailwind-v4'          => 'https://raw.githubusercontent.com/outlawz-team/skills/main/skills',
-        'web-design-guidelines' => 'https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills',
-    ];
-
-    /**
      * Agent skill target paths relative to the project root.
      *
      * @var array<string, string>
@@ -80,37 +69,106 @@ class BoostInstallCommand extends Command
     }
 
     /**
-     * Download and install skills from outlawz-team/skills into each agent's skills directory.
+     * Discover and install skills from all Composer packages that declare
+     * an `extra.outlawz.skills` path in their composer.json.
      *
      * @return void
      */
     protected function installSkills(): void
     {
-        $projectRoot = $this->laravel->basePath();
+        $skills = $this->discoverSkills();
 
-        foreach ($this->skills as $skill => $skillsBaseUrl) {
-            $url = "{$skillsBaseUrl}/{$skill}/SKILL.md";
-            $content = @file_get_contents($url);
+        if ($skills === []) {
+            $this->warn('No skills found in installed packages.');
+            return;
+        }
 
-            if ($content === false) {
-                $this->warn("  Could not download skill: {$skill}");
-                continue;
-            }
-
-            foreach ($this->agentSkillPaths as $agent => $path) {
-                $targetDir = $projectRoot . DIRECTORY_SEPARATOR . $path . DIRECTORY_SEPARATOR . $skill;
-                $targetFile = $targetDir . DIRECTORY_SEPARATOR . 'SKILL.md';
+        foreach ($skills as $name => $skillPath) {
+            foreach ($this->agentSkillPaths as $agent => $agentPath) {
+                $targetDir = $this->laravel->basePath($agentPath . DIRECTORY_SEPARATOR . $name);
 
                 if (!is_dir($targetDir)) {
                     mkdir($targetDir, 0755, true);
                 }
 
-                file_put_contents($targetFile, $content);
-                $this->line("  <fg=green>installed</> skill [{$agent}]: {$skill}");
+                $this->copySkill($skillPath, $targetDir);
+                $this->line("  <fg=green>installed</> skill [{$agent}]: {$name}");
             }
         }
 
         $this->info('Skills installed successfully.');
+    }
+
+    /**
+     * Discover skills from installed Composer packages by reading
+     * vendor/composer/installed.json and looking for extra.outlawz.skills.
+     *
+     * @return array<string, string> Skill name => absolute path to skill directory
+     */
+    protected function discoverSkills(): array
+    {
+        $installedJson = $this->laravel->basePath('vendor/composer/installed.json');
+
+        if (!file_exists($installedJson)) {
+            $this->warn('vendor/composer/installed.json not found.');
+            return [];
+        }
+
+        $installed = json_decode(file_get_contents($installedJson), true);
+
+        // Composer 2.x wraps packages under a "packages" key
+        $packages = $installed['packages'] ?? $installed;
+
+        $skills = [];
+
+        foreach ($packages as $package) {
+            $skillsDir = $package['extra']['outlawz']['skills'] ?? null;
+
+            if ($skillsDir === null) {
+                continue;
+            }
+
+            $packageVendorPath = $this->laravel->basePath('vendor' . DIRECTORY_SEPARATOR . $package['name']);
+            $fullSkillsPath = $packageVendorPath . DIRECTORY_SEPARATOR . $skillsDir;
+
+            if (!is_dir($fullSkillsPath)) {
+                continue;
+            }
+
+            foreach (new \DirectoryIterator($fullSkillsPath) as $item) {
+                if ($item->isDot() || !$item->isDir()) {
+                    continue;
+                }
+
+                $skillFile = $item->getPathname() . DIRECTORY_SEPARATOR . 'SKILL.md';
+
+                if (!file_exists($skillFile)) {
+                    continue;
+                }
+
+                $skills[$item->getFilename()] = $item->getPathname();
+            }
+        }
+
+        return $skills;
+    }
+
+    /**
+     * Copy all files from a skill directory into the target directory.
+     *
+     * @param string $source
+     * @param string $destination
+     * @return void
+     */
+    protected function copySkill(string $source, string $destination): void
+    {
+        foreach (new \DirectoryIterator($source) as $item) {
+            if ($item->isDot() || $item->isDir()) {
+                continue;
+            }
+
+            copy($item->getPathname(), $destination . DIRECTORY_SEPARATOR . $item->getFilename());
+        }
     }
 
     /**
