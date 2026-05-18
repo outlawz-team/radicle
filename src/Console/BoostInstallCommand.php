@@ -38,6 +38,7 @@ class BoostInstallCommand extends Command
     public function handle()
     {
         $this->installAiFiles();
+        $this->mergeMcpConfig();
         $this->installSkills();
     }
 
@@ -66,6 +67,58 @@ class BoostInstallCommand extends Command
         }
 
         $this->info('AI files installed successfully.');
+    }
+
+    /**
+     * Merge ai/.mcp.json from the package into the project root .mcp.json.
+     * Existing MCP servers in the project are preserved.
+     *
+     * @return void
+     */
+    protected function mergeMcpConfig(): void
+    {
+        $sourcePath = __DIR__ . '/../../ai/.mcp.json';
+        $targetPath = $this->laravel->basePath('.mcp.json');
+
+        if (!file_exists($sourcePath)) {
+            $this->warn('Source ai/.mcp.json not found in the package.');
+            return;
+        }
+
+        $incoming = json_decode(file_get_contents($sourcePath), true);
+
+        if (!is_array($incoming)) {
+            $this->error('Source ai/.mcp.json is not valid JSON.');
+            return;
+        }
+
+        $existing = file_exists($targetPath)
+            ? json_decode(file_get_contents($targetPath), true)
+            : [];
+
+        if (!is_array($existing)) {
+            $this->error('Project .mcp.json is not valid JSON.');
+            return;
+        }
+
+        $existing['mcpServers'] ??= [];
+
+        foreach ($incoming['mcpServers'] ?? [] as $name => $config) {
+            if (isset($existing['mcpServers'][$name])) {
+                $this->line("  <fg=yellow>skipped (exists)</> mcp server: {$name}");
+                continue;
+            }
+
+            $existing['mcpServers'][$name] = $config;
+            $this->line("  <fg=green>added</> mcp server: {$name}");
+        }
+
+        file_put_contents(
+            $targetPath,
+            json_encode($existing, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n"
+        );
+
+        $this->info('MCP config merged successfully.');
     }
 
     /**

@@ -20,7 +20,7 @@
   },
   "extra": {
     "outlawz": {
-      "skills": "skills"
+      "skills": "ai/skills"
     },
     "acorn": {
       "providers": [
