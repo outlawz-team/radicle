@@ -72,6 +72,22 @@ Alle waarden die je hier definieert worden:
 1. Automatisch beschikbaar als utility-klassen (`text-brand`, `p-18`, `rounded-xl`)
 2. Beschikbaar als CSS-variabele (`var(--color-brand)`)
 
+### Niet-standaard tokens
+
+Naast `--color-*`, `--font-*`, `--text-*`, `--spacing-*`, `--radius-*` en `--breakpoint-*` mag je elk Tailwind utility-namespace via `@theme` uitbreiden. Voorbeeld: een `blur-blob` utility voor een decoratieve blob-shape:
+
+```css
+@theme {
+  --blur-blob: 118px;
+}
+```
+
+```html
+<div class="bg-blob-pink blur-blob size-175 absolute rounded-full"></div>
+```
+
+Gebruik dit pad voor elke waarde die je consequent hergebruikt en die geen schaal-equivalent heeft.
+
 ---
 
 ## Typografie — naamgeving en conventies
@@ -157,11 +173,120 @@ Geldt voor alle spacing-utilities: `m-`, `p-`, `gap-`, `space-`, `w-`, `h-`, `to
 <div class="mb-[20px] px-[16px] gap-[24px]">...</div>
 ```
 
+### Decimale multipliers
+
+Voor pixelwaardes die níet deelbaar zijn door 4 (zoals 70px, 15px, 554px) gebruik je een **decimale multiplier** op de spacing-schaal — niet `[]`. De multiplier is `pixels / 4`.
+
+| Pixels | Tailwind class |
+| ------ | -------------- |
+| 15px   | `*-3.75`       |
+| 70px   | `*-17.5`       |
+| 554px  | `*-138.5`      |
+
+**Correct:**
+
+```html
+<div class="gap-17.5 max-w-138.5">...</div>
+<!-- 70px, 554px -->
+<div class="gap-3.75">...</div>
+<!-- 15px -->
+```
+
+**Fout:**
+
+```html
+<div class="gap-[70px] max-w-[554px]">...</div>
+```
+
 ### Wanneer mag `[]` wel?
 
-Bereken eerst of de waarde deelbaar is door 4 — zo ja, gebruik de schaal (`w-[200px]` → `w-50`). Controleer daarna of Tailwind een speciaal token heeft voor de waarde (`w-[1px]` → `w-px`, `border-[1px]` → `border`).
+Volgorde van voorkeur bij een pixelwaarde:
+
+1. **Integer-schaal** als deelbaar door 4 (`w-[200px]` → `w-50`).
+2. **Decimale multiplier** als niet deelbaar door 4 (`w-[70px]` → `w-17.5`).
+3. **Speciaal token** als Tailwind dat heeft (`w-[1px]` → `w-px`, `border-[1px]` → `border`).
+4. Pas dán `[]`.
 
 `[]` is alleen toegestaan als er echt geen alternatief is. Controleer altijd eerst of Tailwind de waarde direct ondersteunt — `border-*` werkt bijvoorbeeld op pixel-basis, dus `border-[3px]` is gewoon `border-3`. Documenteer bij gebruik van `[]` kort waarom.
+
+### Uitzondering: `shadow-[…]`
+
+Voor box-shadows is er geen Tailwind-schaal die offset/blur/spread/kleur in één klasse vangt. Arbitraire shadow-syntax met de exacte Figma-waarden is daarom **toegestaan** en hoeft geen `@theme`-token te krijgen:
+
+```html
+<div class="shadow-[0_0_16px_0_rgba(0,0,0,0.04)]">…</div>
+```
+
+Definieer pas een `--shadow-{name}` token als dezelfde shadow op meerdere plekken voorkomt.
+
+---
+
+## Borders
+
+Een border vereist altijd twéé klassen samen: `border` (de breedte) en `border-{color-token}` (de kleur). Alleen `border-primary` rendert niets — er staat geen breedte op.
+
+```html
+<button class="border border-primary">…</button>
+<div class="border border-muted">…</div>
+```
+
+`border-{N}` (bv. `border-2`) gebruik je alleen waar Figma een `strokeWeight` ≠ 1px geeft.
+
+---
+
+## Positionering
+
+Auto-layout vangt de meeste gevallen, maar voor decoratieve elementen (blobs, gelaagde foto's, badges over een card) gebruik je expliciete positionering. Patroon: `relative` op de parent, `absolute` op de child met `top/left/right/bottom-{N}`. Negatieve offsets met `-top-N`, `-left-N` etc. zijn gewone schaal-klassen.
+
+```html
+<div class="relative overflow-hidden">
+  <div
+    class="bg-blob-pink blur-blob -right-45 -top-60.5 size-175 pointer-events-none absolute rounded-full"
+  ></div>
+  <div class="relative z-10">…content…</div>
+</div>
+```
+
+- `pointer-events-none` op puur decoratieve elementen zodat hover/klik door de parent loopt.
+- `overflow-hidden` op de outer wrapper als blobs over de viewport-rand mogen lopen.
+- `z-{N}` alleen waar stacking-volgorde anders niet klopt.
+
+---
+
+## `shrink-0` — canonieke vorm
+
+Tailwind v4 ondersteunt zowel `shrink-0` als `flex-shrink-0`. Gebruik altijd de korte vorm: `shrink-0`.
+
+```html
+<div class="flex">
+  <img class="size-10 shrink-0" src="..." />
+  <p class="min-w-0">…lange tekst die mag wrappen…</p>
+</div>
+```
+
+---
+
+## `size-*` — width en height in één klasse
+
+Wanneer width en height gelijk zijn (icoon-containers, avatars, dots, badges), gebruik `size-N` als shorthand voor `w-N h-N`. Volgt dezelfde 4px-schaal en accepteert ook decimale multipliers.
+
+| Klasse    | Equivalent  | Pixels  |
+| --------- | ----------- | ------- |
+| `size-4`  | `w-4 h-4`   | 16×16px |
+| `size-5`  | `w-5 h-5`   | 20×20px |
+| `size-10` | `w-10 h-10` | 40×40px |
+
+**Correct:**
+
+```html
+<div class="size-10 rounded-full bg-primary">...</div>
+```
+
+**Fout:**
+
+```html
+<div class="w-10 h-10 rounded-full bg-primary">...</div>
+```
 
 ---
 
@@ -385,6 +510,20 @@ Kies semantische namen die de rol beschrijven, niet de kleur:
 
 ---
 
+## Opacity modifiers op kleuren
+
+Elk custom kleur-token combineer je met een opacity-modifier via `/{nummer}`. Werkt op `bg-`, `text-`, `border-`, `fill-`, `stroke-` en alle andere kleur-utilities.
+
+```html
+<span class="text-on-surface/60">Subtiele tekst</span>
+<div class="bg-primary/20">Lichte achtergrond</div>
+<div class="border-secondary/40">Zachte rand</div>
+```
+
+De waarde achter `/` is een percentage (0–100). Combineer dit met je bestaande tokens — definieer **niet** aparte tokens zoals `--color-on-surface-60` voor opacity-varianten.
+
+---
+
 ## Veelgemaakte fouten
 
 1. **Nog een `tailwind.config.js` aanmaken** — niet nodig en kan conflicten geven. Gebruik `@theme`.
@@ -392,11 +531,13 @@ Kies semantische namen die de rol beschrijven, niet de kleur:
 3. **Standaard Tailwind kleuren gebruiken** (`bg-blue-600`, `text-red-500`) — gebruik altijd custom kleur-tokens. De standaard kleuren hoef je niet te verwijderen, maar gebruik ze nooit.
 4. **Kleuren als `oklch()` opgeven** — wij gebruiken altijd hex (`#rrggbb`) voor kleuren in `@theme`. Geen `oklch()`, geen `rgb()`.
 5. **Content-paden handmatig instellen** — niet nodig tenzij je bestanden buiten het project staan.
-6. **Arbitraire waarden gebruiken** (`mb-[20px]`, `p-[16px]`, `gap-[24px]`) — gebruik altijd de 4px-schaal (`mb-5`, `p-4`, `gap-6`). Alleen gebruiken als de waarde niet deelbaar is door 4 of geen alternatief heeft.
+6. **Arbitraire waarden gebruiken** (`mb-[20px]`, `p-[16px]`, `gap-[24px]`) — gebruik altijd de 4px-schaal (`mb-5`, `p-4`, `gap-6`). Als de waarde niet deelbaar is door 4, gebruik een **decimale multiplier** (`gap-17.5` voor 70px, `max-w-138.5` voor 554px) — niet `[]`. Uitzondering: `shadow-[…]` is toegestaan omdat er geen shadow-schaal is.
 7. **Inline font sizes gebruiken** (`text-[20px] leading-[24px]`) — gebruik altijd de `text-{size}-{lineHeight}-{weight}` naamconventie via `@theme`.
 8. **Tekst tokens als rem of tuple definiëren** (`--text-20-24-400: 1.25rem / 1.5rem`) — gebruik altijd px met aparte `--line-height` en `--font-weight` properties.
 9. **Raw CSS schrijven in `.css`-bestanden** — gebruik altijd `@apply` met Tailwind utilities. Alleen uitzondering: stijlen zonder Tailwind equivalent, dan met comment documenteren waarom.
 10. **`@layer` gebruiken** — gebruik nooit `@layer`. Schrijf classes gewoon direct in CSS.
+11. **`w-N h-N` schrijven voor gelijke maten** — gebruik `size-N` als shorthand (`size-10` in plaats van `w-10 h-10`).
+12. **Aparte kleur-tokens definiëren voor opacity-varianten** (`--color-on-surface-60`) — gebruik de `/opacity` modifier op het bestaande token (`text-on-surface/60`).
 
 ---
 
