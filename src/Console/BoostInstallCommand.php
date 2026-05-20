@@ -28,6 +28,7 @@ class BoostInstallCommand extends Command
     protected array $agentSkillPaths = [
         'claude' => '.claude/skills',
         'codex'  => '.agents/skills',
+        'cursor' => '.cursor/skills',
     ];
 
     /**
@@ -40,6 +41,55 @@ class BoostInstallCommand extends Command
         $this->installAiFiles();
         $this->mergeMcpConfig();
         $this->installSkills();
+        $this->mergeGitignore();
+    }
+
+    /**
+     * Ensure project .gitignore contains the entries required by Outlawz Boost.
+     *
+     * @return void
+     */
+    protected function mergeGitignore(): void
+    {
+        $targetPath = $this->laravel->basePath('.gitignore');
+
+        $header = '# Figma-to-Blade workflow references (screenshots + context dumps)';
+        $entries = [
+            'storage/figma-references',
+            '.playwright-mcp',
+        ];
+
+        $existing = file_exists($targetPath) ? file_get_contents($targetPath) : '';
+
+        $existingLines = array_map('trim', preg_split('/\R/', $existing) ?: []);
+
+        $missing = array_values(array_filter(
+            $entries,
+            fn (string $entry): bool => !in_array($entry, $existingLines, true)
+        ));
+
+        if ($missing === []) {
+            $this->line('  <fg=yellow>skipped (exists)</> .gitignore entries already present');
+            return;
+        }
+
+        $prefix = '';
+        if ($existing !== '' && !str_ends_with($existing, "\n")) {
+            $prefix .= "\n";
+        }
+        if ($existing !== '') {
+            $prefix .= "\n";
+        }
+
+        $block = $prefix . $header . "\n" . implode("\n", $missing) . "\n";
+
+        file_put_contents($targetPath, $existing . $block);
+
+        foreach ($missing as $entry) {
+            $this->line("  <fg=green>added</> .gitignore: {$entry}");
+        }
+
+        $this->info('.gitignore updated successfully.');
     }
 
     /**
@@ -207,7 +257,7 @@ class BoostInstallCommand extends Command
     }
 
     /**
-     * Copy all files from a skill directory into the target directory.
+     * Recursively copy all files from a skill directory into the target directory.
      *
      * @param string $source
      * @param string $destination
@@ -215,12 +265,23 @@ class BoostInstallCommand extends Command
      */
     protected function copySkill(string $source, string $destination): void
     {
-        foreach (new \DirectoryIterator($source) as $item) {
-            if ($item->isDot() || $item->isDir()) {
+        $items = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($items as $item) {
+            $relativePath = substr($item->getPathname(), strlen($source) + 1);
+            $target = $destination . DIRECTORY_SEPARATOR . $relativePath;
+
+            if ($item->isDir()) {
+                if (!is_dir($target)) {
+                    mkdir($target, 0755, true);
+                }
                 continue;
             }
 
-            copy($item->getPathname(), $destination . DIRECTORY_SEPARATOR . $item->getFilename());
+            copy($item->getPathname(), $target);
         }
     }
 
