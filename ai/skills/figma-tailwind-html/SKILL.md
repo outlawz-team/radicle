@@ -17,34 +17,38 @@ Elke gegenereerde HTML volgt **letterlijk** dit template:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link href="https://fonts.googleapis.com/css2?family={Display}:wght@{weights}&family={Sans}:wght@{weights}&display=swap" rel="stylesheet" />
+<link
+  href="https://fonts.googleapis.com/css2?family={Display}:wght@{weights}&family={Sans}:wght@{weights}&display=swap"
+  rel="stylesheet"
+/>
 
 <style type="text/tailwindcss">
-	@theme {
-		--font-display: '{Display}', ui-sans-serif, system-ui, sans-serif;
-		--font-sans: '{Sans}', ui-sans-serif, system-ui, sans-serif;
+  @theme {
+  	--font-display: '{Display}', ui-sans-serif, system-ui, sans-serif;
+  	--font-sans: '{Sans}', ui-sans-serif, system-ui, sans-serif;
 
-		--color-primary: #...;
-		--color-on-primary: #...;
-		--color-surface: #...;
-		--color-on-surface: #...;
-		/* …meer kleur-tokens… */
+  	--color-primary: #...;
+  	--color-on-primary: #...;
+  	--color-surface: #...;
+  	--color-on-surface: #...;
+  	/* …meer kleur-tokens… */
 
-		--text-{size}-{lh}-{weight}: {size}px;
-		--text-{size}-{lh}-{weight}--line-height: {lh}px;
-		--text-{size}-{lh}-{weight}--font-weight: {weight};
-		/* …meer text-tokens… */
-	}
+  	--text-{size}-{lh}-{weight}: {size}px;
+  	--text-{size}-{lh}-{weight}--line-height: {lh}px;
+  	--text-{size}-{lh}-{weight}--font-weight: {weight};
+  	/* …meer text-tokens… */
+  }
 </style>
 
 <div class="bg-surface text-on-surface font-sans">
-	<div class="max-w-... mx-auto ...">
-		<!-- content -->
-	</div>
+  <div class="max-w-... mx-auto ...">
+    <!-- content -->
+  </div>
 </div>
 ```
 
 **Verplicht:**
+
 - Eerst `<script>` van `@tailwindcss/browser@4`, daarna `<link>` voor Google Fonts, daarna het `<style type="text/tailwindcss">` blok met `@theme`, daarna pas de content.
 - De buitenste content-`<div>` zet de body-defaults: `bg-surface text-on-surface font-sans`.
 - Content wordt gecentreerd met `mx-auto` + `max-w-...` zodra de Figma-root een vaste totaal-breedte heeft (bv. `absoluteBoundingBox.width: 1216` → `max-w-304`).
@@ -56,26 +60,28 @@ Elke gegenereerde HTML volgt **letterlijk** dit template:
 
 ### Auto-layout
 
-| Figma-property | Tailwind-klasse |
-|----------------|-----------------|
-| `layoutMode: HORIZONTAL` | `flex` |
-| `layoutMode: VERTICAL` | `flex flex-col` |
-| `itemSpacing: N` (px) | `gap-{N/4}` (4px-schaal, decimale multiplier indien nodig) |
-| `paddingLeft/Right: N` | `px-{N/4}` |
-| `paddingTop/Bottom: N` | `py-{N/4}` |
-| Alle 4 padding gelijk: N | `p-{N/4}` |
-| `primaryAxisAlignItems: CENTER` | `justify-center` |
-| `primaryAxisAlignItems: SPACE_BETWEEN` | `justify-between` |
-| `counterAxisAlignItems: CENTER` | `items-center` |
-| `counterAxisAlignItems: BASELINE` | `items-baseline` |
-| `layoutWrap: WRAP` | `flex-wrap` |
-| `layoutPositioning: ABSOLUTE` (child) | `absolute` + `top/left/right/bottom-{N}` (uit `absoluteBoundingBox`), parent krijgt `relative` |
+| Figma-property                         | Tailwind-klasse                                                                                |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `layoutMode: HORIZONTAL`               | `flex`                                                                                         |
+| `layoutMode: VERTICAL`                 | `flex flex-col`                                                                                |
+| `itemSpacing: N` (px)                  | `gap-{N/4}` (4px-schaal, decimale multiplier indien nodig)                                     |
+| `paddingLeft/Right: N`                 | `px-{N/4}`                                                                                     |
+| `paddingTop/Bottom: N`                 | `py-{N/4}`                                                                                     |
+| Alle 4 padding gelijk: N               | `p-{N/4}`                                                                                      |
+| `primaryAxisAlignItems: CENTER`        | `justify-center`                                                                               |
+| `primaryAxisAlignItems: SPACE_BETWEEN` | `justify-between`                                                                              |
+| `counterAxisAlignItems: CENTER`        | `items-center`                                                                                 |
+| `counterAxisAlignItems: BASELINE`      | `items-baseline`                                                                               |
+| `layoutWrap: WRAP`                     | `flex-wrap`                                                                                    |
+| `layoutPositioning: ABSOLUTE` (child)  | `absolute` + `top/left/right/bottom-{N}` (uit `absoluteBoundingBox`), parent krijgt `relative` |
 
 Decoratieve blob-/gradient-shapes (vrijstaande cirkels met blur, vaak achter de content):
 
 ```html
 <div class="relative overflow-hidden">
-  <div class="bg-blob-pink blur-blob -right-45 -top-60.5 size-175 pointer-events-none absolute rounded-full"></div>
+  <div
+    class="bg-blob-pink blur-blob -right-45 -top-60.5 size-175 pointer-events-none absolute rounded-full"
+  ></div>
   <div class="relative z-10">…content…</div>
 </div>
 ```
@@ -86,15 +92,15 @@ Decoratieve blob-/gradient-shapes (vrijstaande cirkels met blur, vaak achter de 
 
 ### Sizing
 
-| Figma-property | Tailwind-klasse |
-|----------------|-----------------|
-| `layoutSizingHorizontal: FIXED` + `width: N` | `w-{N/4}` (of `max-w-{N/4}` als beperking) |
-| `layoutSizingHorizontal: FILL` | `w-full` (eventueel met `shrink-0` of `flex-1`) |
-| `layoutSizingHorizontal: HUG` | geen breedte-klasse |
-| `layoutSizingVertical: FIXED` + `height: N` | `h-{N/4}` |
-| Vierkant frame (w == h) | `size-{N/4}` |
-| `cornerRadius: N` (klein) | `rounded-{token}` (`rounded-xl` voor 12px, etc.) |
-| `cornerRadius` >= halve breedte | `rounded-full` |
+| Figma-property                               | Tailwind-klasse                                  |
+| -------------------------------------------- | ------------------------------------------------ |
+| `layoutSizingHorizontal: FIXED` + `width: N` | `w-{N/4}` (of `max-w-{N/4}` als beperking)       |
+| `layoutSizingHorizontal: FILL`               | `w-full` (eventueel met `shrink-0` of `flex-1`)  |
+| `layoutSizingHorizontal: HUG`                | geen breedte-klasse                              |
+| `layoutSizingVertical: FIXED` + `height: N`  | `h-{N/4}`                                        |
+| Vierkant frame (w == h)                      | `size-{N/4}`                                     |
+| `cornerRadius: N` (klein)                    | `rounded-{token}` (`rounded-xl` voor 12px, etc.) |
+| `cornerRadius` >= halve breedte              | `rounded-full`                                   |
 
 Extra sizing-hulpmiddelen:
 
@@ -104,42 +110,42 @@ Extra sizing-hulpmiddelen:
 
 ### Tekst
 
-| Figma-property | Tailwind / HTML |
-|----------------|-----------------|
-| `style.fontSize: 40`, `lineHeightPx: 40`, `fontWeight: 700` | token `text-40-40-700` |
-| `style.fontFamily: 'Oxanium'` (display-font in design) | `--font-display`, klasse `font-display` |
-| `style.fontFamily: 'Lexend'` (bodytekst) | `--font-sans`, klasse `font-sans` |
-| `style.textCase: UPPER` | klasse `uppercase` |
-| `style.textCase: LOWER` | klasse `lowercase` |
-| `style.textAlignHorizontal: CENTER` | klasse `text-center` (combineer met `flex flex-col items-center` op de wrapper als ook het blok zelf gecentreerd moet) |
-| `characters: "..."` | tekstinhoud van het element |
-| `characterStyleOverrides` + `styleOverrideTable` | inline `<span>` met afwijkende kleur/grootte |
+| Figma-property                                              | Tailwind / HTML                                                                                                        |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `style.fontSize: 40`, `lineHeightPx: 40`, `fontWeight: 700` | token `text-40-40-700`                                                                                                 |
+| `style.fontFamily: 'Oxanium'` (display-font in design)      | `--font-display`, klasse `font-display`                                                                                |
+| `style.fontFamily: 'Lexend'` (bodytekst)                    | `--font-sans`, klasse `font-sans`                                                                                      |
+| `style.textCase: UPPER`                                     | klasse `uppercase`                                                                                                     |
+| `style.textCase: LOWER`                                     | klasse `lowercase`                                                                                                     |
+| `style.textAlignHorizontal: CENTER`                         | klasse `text-center` (combineer met `flex flex-col items-center` op de wrapper als ook het blok zelf gecentreerd moet) |
+| `characters: "..."`                                         | tekstinhoud van het element                                                                                            |
+| `characterStyleOverrides` + `styleOverrideTable`            | inline `<span>` met afwijkende kleur/grootte                                                                           |
 
 ### Kleur (fills)
 
-| Figma-property | Tailwind |
-|----------------|----------|
-| `fills[0].color: {r,g,b}` (0–1 floats) | hex `#rrggbb`, opnemen als token in `@theme` |
-| `fills[0].opacity: 0.6` | `/60` opacity-modifier op het kleur-token |
-| `node.opacity: 0.5` | `/50` opacity-modifier (of `opacity-50` als hele node fade) |
-| `strokes[0].color` | `border-{token}` + `border` |
+| Figma-property                         | Tailwind                                                    |
+| -------------------------------------- | ----------------------------------------------------------- |
+| `fills[0].color: {r,g,b}` (0–1 floats) | hex `#rrggbb`, opnemen als token in `@theme`                |
+| `fills[0].opacity: 0.6`                | `/60` opacity-modifier op het kleur-token                   |
+| `node.opacity: 0.5`                    | `/50` opacity-modifier (of `opacity-50` als hele node fade) |
+| `strokes[0].color`                     | `border-{token}` + `border`                                 |
 
 ### Effects
 
-| Figma-effect | Tailwind |
-|--------------|----------|
+| Figma-effect                          | Tailwind                                                                   |
+| ------------------------------------- | -------------------------------------------------------------------------- |
 | `DROP_SHADOW` met offset/radius/color | `shadow-[X_Y_blur_spread_rgba(...)]` (arbitrair) of bestaande shadow-token |
-| `INNER_SHADOW` | `inset shadow-[...]` |
-| `LAYER_BLUR` | `blur-*` (`blur-sm`, `blur-md`, ...) |
+| `INNER_SHADOW`                        | `inset shadow-[...]`                                                       |
+| `LAYER_BLUR`                          | `blur-*` (`blur-sm`, `blur-md`, ...)                                       |
 
 ### Componenten / iconen
 
-| Figma | HTML |
-|-------|------|
-| `INSTANCE` met naam `material-symbols:call-outline`, `mail-outline`, `arrow-...`, etc. | inline `<svg>` met het **bekende material-symbols path** (niet de Figma VECTOR-data) |
-| `INSTANCE` van een Button-component | `<a href="...">` of `<button type="button">` met `inline-flex h-{N/4} items-center justify-center px-{N/4} rounded-full` |
-| `RECTANGLE` met `fills.type: IMAGE` | `<img src="https://images.unsplash.com/photo-{id}?w=712&q=80" alt="" class="object-cover ...">` (zie "Image-handling") |
-| Decoratieve `VECTOR` (uniek, geen icon-lib equivalent) | letterlijk `<svg viewBox="..."><path d="..."/></svg>` overnemen |
+| Figma                                                                                  | HTML                                                                                                                                                   |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `INSTANCE` met naam `material-symbols:call-outline`, `mail-outline`, `arrow-...`, etc. | inline `<svg>` met het **bekende material-symbols path** (niet de Figma VECTOR-data)                                                                   |
+| `INSTANCE` van een Button-component                                                    | `<a href="...">` of `<button type="button">` met `inline-flex h-{N/4} items-center justify-center px-{N/4} rounded-full`                               |
+| `RECTANGLE` met `fills.type: IMAGE`                                                    | `<img src="{figma-asset-url}" alt="" class="object-cover ...">` met de URL die `get_design_context` als asset-constant teruggaf (zie "Image-handling") |
+| Decoratieve `VECTOR` (uniek, geen icon-lib equivalent)                                 | letterlijk `<svg viewBox="..."><path d="..."/></svg>` overnemen                                                                                        |
 
 ---
 
@@ -169,11 +175,13 @@ Voor élke unieke combinatie van `fontSize` + `lineHeightPx` + `fontWeight` in d
 ```
 
 Voorbeelden uit dataset:
+
 - `fontSize: 40, lineHeightPx: 40, fontWeight: 700` → `text-40-40-700`
 - `fontSize: 16, lineHeightPx: 24, fontWeight: 400` → `text-16-24-400`
 - `fontSize: 14, lineHeightPx: 17.5, fontWeight: 400` → `text-14-17-400` (rond `17.5` af naar `17` in de tokennaam; de waarde mag exact blijven)
 
 **Regels:**
+
 - Altijd **px**, geen `rem`.
 - Aparte properties voor `--line-height` en `--font-weight` (Tailwind v4 syntax). Nooit als tuple `1.25rem / 1.5rem`.
 - Nooit losse `leading-{n}` of `font-{weight}` klassen in HTML — alles in het token.
@@ -191,6 +199,7 @@ Voorbeelden uit dataset:
 ## Layout-extractie (volgorde)
 
 Voor elk frame met `layoutMode`:
+
 1. **Richting**: `flex` (HORIZONTAL) of `flex flex-col` (VERTICAL).
 2. **Gap**: `gap-{itemSpacing/4}`. Niet deelbaar door 4 → decimale multiplier (`itemSpacing: 15` → `gap-3.75`).
 3. **Padding**: combineer `paddingLeft/Right/Top/Bottom` naar `p-`, `px-`/`py-`, of losse `pt-`/`pr-`/`pb-`/`pl-` naar gelang gelijkheid.
@@ -206,18 +215,18 @@ Frames zonder `layoutMode` en zonder kinderen zijn vaak puur visueel (achtergron
 
 ## Semantische HTML-keuzes
 
-| Inhoud | Element |
-|--------|---------|
-| Sectie-titel (grootste TEXT in een card/sectie) | `<h2>` |
-| Sub-titel | `<h3>` |
-| Bodytekst-paragraaf (lange `characters`) | `<p>` |
-| Korte label / eyebrow / metadata | `<span>` |
-| Knop met telefoonnummer (`0320...`) als kind | wrap in `<a href="tel:+31...">` |
-| Knop met e-mailadres | `<a href="mailto:...">` |
-| Knop "Offerte aanvragen", "Download brochure", "Meer lezen" | `<a href="#">` (placeholder href) |
-| Carrousel-pijlen, sluit-iconen, niet-link acties | `<button type="button" aria-label="Vorige">` |
-| Lijst van semantisch gelijkwaardige items (nav, opsomming) | `<ul><li>` |
-| Grid van cards (visueel parallel maar zelfstandig) | gewoon `<div>` met `flex`/`gap-*` |
+| Inhoud                                                      | Element                                      |
+| ----------------------------------------------------------- | -------------------------------------------- |
+| Sectie-titel (grootste TEXT in een card/sectie)             | `<h2>`                                       |
+| Sub-titel                                                   | `<h3>`                                       |
+| Bodytekst-paragraaf (lange `characters`)                    | `<p>`                                        |
+| Korte label / eyebrow / metadata                            | `<span>`                                     |
+| Knop met telefoonnummer (`0320...`) als kind                | wrap in `<a href="tel:+31...">`              |
+| Knop met e-mailadres                                        | `<a href="mailto:...">`                      |
+| Knop "Offerte aanvragen", "Download brochure", "Meer lezen" | `<a href="#">` (placeholder href)            |
+| Carrousel-pijlen, sluit-iconen, niet-link acties            | `<button type="button" aria-label="Vorige">` |
+| Lijst van semantisch gelijkwaardige items (nav, opsomming)  | `<ul><li>`                                   |
+| Grid van cards (visueel parallel maar zelfstandig)          | gewoon `<div>` met `flex`/`gap-*`            |
 
 Voor accessibility: voeg `alt=""` toe aan decoratieve `<img>`, `aria-label` aan icon-only buttons.
 
@@ -242,8 +251,16 @@ Als een Figma `INSTANCE` of `FRAME` heet zoals `material-symbols:call-outline`, 
 
 ```html
 <!-- material-symbols:call-outline -->
-<svg class="size-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-	<path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" fill="currentColor" />
+<svg
+  class="size-4"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+    fill="currentColor"
+  />
 </svg>
 ```
 
@@ -254,9 +271,17 @@ Reden: de Figma VECTOR-paden zijn vaak vereenvoudigd of geschaald; de canonieke 
 Gebruik een eenvoudige stroke-based SVG in Lucide-stijl:
 
 ```html
-<svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-	<path d="M5 12h14" />
-	<path d="m12 5 7 7-7 7" />
+<svg
+  class="size-5"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M5 12h14" />
+  <path d="m12 5 7 7-7 7" />
 </svg>
 ```
 
@@ -267,7 +292,11 @@ Voor "vorige" voeg je `rotate-180` toe.
 Voor iconen die geen standaard library-equivalent hebben (bv. een illustratief peper-/chili-icoon), neem de `<svg>` letterlijk over uit de Figma VECTOR-data: `viewBox`, `fill-rule`, `clip-rule`, `d`. **Vervang álle hardcoded `fill="#..."` door `fill="currentColor"`** en zet de kleur via een `text-{token}` klasse op de SVG of een parent:
 
 ```html
-<svg class="text-primary size-12" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+<svg
+  class="text-primary size-12"
+  viewBox="0 0 40 40"
+  xmlns="http://www.w3.org/2000/svg"
+>
   <path fill-rule="evenodd" clip-rule="evenodd" d="..." fill="currentColor" />
 </svg>
 ```
@@ -278,18 +307,35 @@ Dit geldt voor élk type icoon (material-symbols, lucide-pijl, decoratief). Geen
 
 ## Image-handling
 
-Figma `IMAGE`-fills bevatten enkel een ref (`imageRef`); die kun je niet direct als `src` gebruiken. Vervang met een Unsplash-placeholder die qua onderwerp past bij de context:
+Figma `IMAGE`-fills bevatten enkel een ref (`imageRef`) die je niet direct als `src` kunt gebruiken. Wél geeft de Figma MCP server bij `get_design_context` per image-fill een asset-URL terug als constant in het reference-snippet:
 
-```html
-<img class="h-50 w-full object-cover" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=712&q=80" alt="" />
+```js
+const imgFrame35 =
+  "https://www.figma.com/api/mcp/asset/089a5c7b-24d2-42b5-8d28-f36d39eb47c9";
 ```
 
+Gebruik die URL direct als `src`:
+
+```html
+<img
+  class="h-50 w-full object-cover"
+  src="https://www.figma.com/api/mcp/asset/089a5c7b-24d2-42b5-8d28-f36d39eb47c9"
+  alt=""
+/>
+```
+
+**Belangrijk — vervaltermijn**: deze Figma asset URLs zijn maar **7 dagen geldig**. Voor een standalone preview-HTML (deze skill's primaire output) is dat prima — het is een snapshot voor experimenten/review. Voor productie of duurzame outputs zie de `figma-to-blade` skill: die downloadt assets naar `resources/images/` en serveert ze via `Vite::asset()`.
+
+**Geen Unsplash-placeholders meer**. De Figma-export is altijd de juiste foto en is meteen beschikbaar — geen mismatch tussen design en output.
+
 Regels:
-- Hostpattern altijd `https://images.unsplash.com/photo-{id}?w=712&q=80`.
+
+- `src` = de exacte asset-URL die `get_design_context` teruggaf, geen herschrijven, geen `?w=…` parameter toevoegen.
 - `alt=""` voor decoratieve foto's (sfeerbeelden), volwaardige tekst alleen als de afbeelding informatieve waarde heeft.
 - `object-cover` voor sfeerfoto's die de container moeten vullen (en mogen croppen).
 - `object-contain` voor logo's en illustraties waar de hele afbeelding zichtbaar moet blijven.
 - Voor cirkelvormige foto's: `rounded-full object-cover` + vast `size-N` of `h-N w-N`.
+- Als `get_design_context` geen asset-URL teruggeeft (bv. een vector-fill of een masker zonder bitmap-bron): laat een **lege placeholder** staan (`<div class="bg-muted h-50 w-full"></div>`) en noteer dat in je samenvatting — verzin geen Unsplash- of stockfoto-URL.
 
 ---
 
@@ -300,10 +346,23 @@ Regels:
 Voor buttons met inline pijl-cirkel rechts: asymmetrische padding (`py-1 pl-5 pr-1`) zodat de innerlijke `size-10`-cirkel netjes in de outer-`h-12` past.
 
 ```html
-<a href="#" class="bg-primary text-on-primary text-16-24-400 inline-flex h-12 cursor-pointer items-center gap-3 self-start py-1 pl-5 pr-1 font-bold">
+<a
+  href="#"
+  class="bg-primary text-on-primary text-16-24-400 inline-flex h-12 cursor-pointer items-center gap-3 self-start py-1 pl-5 pr-1 font-bold"
+>
   <span>Meer lezen</span>
-  <span class="bg-on-primary text-primary flex size-10 items-center justify-center">
-    <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <span
+    class="bg-on-primary text-primary flex size-10 items-center justify-center"
+  >
+    <svg
+      class="size-5"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
       <path d="M5 12h14" />
       <path d="m12 5 7 7-7 7" />
     </svg>
@@ -326,8 +385,20 @@ Actieve dot krijgt `bg-primary`, inactieve `bg-muted` (of je equivalent neutraal
 ### Carrousel-pijlknoppen
 
 ```html
-<button type="button" class="text-on-surface border border-muted flex size-12 cursor-pointer items-center justify-center" aria-label="Vorige">
-  <svg class="size-5 rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<button
+  type="button"
+  class="text-on-surface border border-muted flex size-12 cursor-pointer items-center justify-center"
+  aria-label="Vorige"
+>
+  <svg
+    class="size-5 rotate-180"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
     <path d="M5 12h14" />
     <path d="m12 5 7 7-7 7" />
   </svg>
@@ -341,6 +412,7 @@ Vorige-knop: dezelfde SVG met `rotate-180`. Altijd `aria-label`. `cursor-pointer
 ## Sizing — pixelwaarde naar klasse
 
 Volgorde van voorkeur (zie ook tailwind-v4 skill):
+
 1. **Deelbaar door 4** → integer-schaal: `width: 200` → `w-50`, `width: 592` → `w-148`, `width: 356` → `w-89`.
 2. **Niet deelbaar door 4** → decimale multiplier: `width: 554` → `max-w-138.5`, `itemSpacing: 70` → `gap-17.5`, `itemSpacing: 15` → `gap-3.75`.
 3. **Speciale tokens** waar Tailwind die heeft: `1px` → `border` of `*-px`.
@@ -348,23 +420,23 @@ Volgorde van voorkeur (zie ook tailwind-v4 skill):
 
 Veelvoorkomende Figma-waarden uit de dataset en hun klasse:
 
-| px | Klasse |
-|----|--------|
-| 12 | `*-3` |
-| 15 | `*-3.75` |
-| 16 | `*-4` |
-| 24 | `*-6` |
-| 40 | `*-10` (of `size-10`) |
-| 48 | `*-12` |
-| 64 | `*-16` |
-| 70 | `*-17.5` |
-| 200 | `*-50` |
-| 356 | `*-89` |
-| 554 | `*-138.5` |
-| 592 | `*-148` |
-| 712 | `*-178` |
+| px   | Klasse                     |
+| ---- | -------------------------- |
+| 12   | `*-3`                      |
+| 15   | `*-3.75`                   |
+| 16   | `*-4`                      |
+| 24   | `*-6`                      |
+| 40   | `*-10` (of `size-10`)      |
+| 48   | `*-12`                     |
+| 64   | `*-16`                     |
+| 70   | `*-17.5`                   |
+| 200  | `*-50`                     |
+| 356  | `*-89`                     |
+| 554  | `*-138.5`                  |
+| 592  | `*-148`                    |
+| 712  | `*-178`                    |
 | 1216 | `*-304` (vaak `max-w-304`) |
-| 1276 | `*-319` |
+| 1276 | `*-319`                    |
 
 `size-N` voor vierkante elementen (icoon-cirkels, dots, avatars).
 
@@ -416,4 +488,4 @@ Veelvoorkomende Figma-waarden uit de dataset en hun klasse:
 
 - Gebruiker geeft een Figma JSON-input (bv. uit `dataset/*/input.json`) en wil een HTML-equivalent.
 - Gebruiker plakt een Figma file-URL of node-ID en vraagt om "tailwind/html" of "convert to HTML".
-- Combineren met **`tailwind-v4`** skill: deze regelt het *mappen*, die regelt de *Tailwind-conventies*. Laad beide.
+- Combineren met **`tailwind-v4`** skill: deze regelt het _mappen_, die regelt de _Tailwind-conventies_. Laad beide.
